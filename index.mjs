@@ -1,5 +1,6 @@
-const express = require('express');
-const request = require('request');
+import express from 'express';
+import request from 'request';
+import getEnv from './src/utils/getEnv';
 
 const app = express();
 
@@ -10,13 +11,13 @@ app.use((req, res, next) => {
 
 app.get('/words/:word', (req, res) => {
   request(
-    { url: `https://jisho.org/api/v1/search/words/?keyword=${req.query.word}` },
+    { url: `${getEnv('JISHO_URL', '')}?keyword=${req.params.word}` },
     (error, response, body) => {
       if (error || response.statusCode !== 200) {
-        return res.status(500).json({ type: 'error', message: err.message });
+        return res.status(500).json({ type: 'error', message: error.message });
       }
 
-      res.json(JSON.parse(body));
+      return res.json(JSON.parse(body));
     },
   );
 });
