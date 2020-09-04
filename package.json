@@ -23,7 +23,8 @@
   "scripts": {
     "clean": "rm dist/bundle.js",
     "dev": "webpack --watch -d --mode development",
-    "prod": "webpack -p --mode production"
+    "build": "webpack --mode production",
+    "start": "node dist/bundle.js"
   },
   "author": "",
   "license": "ISC",
