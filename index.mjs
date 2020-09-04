@@ -1,27 +1,43 @@
 import express from 'express';
-import fetchAPIs from './src/api/fetchAPIs';
+import { getSingleKanji } from './src/getKanji';
+import { getSingleWord } from './src/getWord';
 
 const app = express();
 
-app.use((req, res, next) => {
+app.use((_, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
 
-app.post('/words', async (req, res) => {
-  const { kanji_live_api_key: kanjiLiveApiKey } = req.headers;
+// app.get('/test', (_, res) => res.send('<div><p>Hello</p><h1>world</h1></div>'));
+app.get('/kanji', async (req, res) => {
+  const { kanji_alive_api_key: kanjiAliveApiKey } = req.headers;
   const { word, allowRefetch, handleAsWord } = req.query;
 
   const options = {
-    kanjiLiveApiKey,
+    kanjiAliveApiKey,
     allowRefetch,
     handleAsWord,
   };
 
-  const args = { word };
+  try {
+    const body = await getSingleKanji(options, word);
+    res.json(body);
+  } catch (err) {
+    res.status(500).json({ type: 'error', message: err.message });
+  }
+});
+
+app.get('/word', async (req, res) => {
+  const { word, allowRefetch, handleAsWord } = req.query;
+
+  const options = {
+    allowRefetch,
+    handleAsWord,
+  };
 
   try {
-    const body = await fetchAPIs(options, args);
+    const body = await getSingleWord(options, word);
     res.json(body);
   } catch (err) {
     res.status(500).json({ type: 'error', message: err.message });

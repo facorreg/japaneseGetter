@@ -35,7 +35,7 @@ const parseKanjiAlive = (response = {}, word) => {
   };
 };
 
-const getKanjiAliveData = async (word, apiKey) => {
+const getKanjiAliveData = async (word) => {
   try {
     const args = {
       url: `${getEnv('KANJI_ALIVE_URL', '')}${word}`,
@@ -43,7 +43,7 @@ const getKanjiAliveData = async (word, apiKey) => {
         method: 'GET',
         headers: {
           'x-rapidapi-host': 'kanjialive-api.p.rapidapi.com',
-          'x-rapidapi-key': apiKey,
+          'x-rapidapi-key': getEnv('KANJI_ALIVE_API_KEY', ''),
         },
       },
     };

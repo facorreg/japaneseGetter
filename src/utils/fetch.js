@@ -1,4 +1,3 @@
-import isEmpty from 'lodash';
 import nodeFetch from 'node-fetch';
 import rejectError from './rejectError';
 
@@ -6,14 +5,14 @@ const fetch = async (args) => {
   const {
     url,
     headers = {},
-    args: queryArgs,
+    args: queryArgs = {},
   } = args;
 
-  const argString = !isEmpty(queryArgs)
-    ? Object
-      .keys(queryArgs)
-      .map((key, i) => `${!i ? '?' : ''}${key}=${queryArgs[key]}`)
-    : '';
+  const argString = Object
+    .keys(queryArgs)
+    .map((key, i) => `${!i ? '?' : ''}${key}=${queryArgs[key]}`)
+    .join('&');
+
   const response = await nodeFetch(encodeURI(`${url}${argString}`), headers);
   if (!response.ok) return rejectError('response-code');
 
