@@ -7,6 +7,9 @@ const config = {
   entry: './index.mjs',
   resolve: {
     extensions: ['.mjs', '.js'],
+    alias: {
+      utils: path.resolve(__dirname, 'src/utils/'),
+    },
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
