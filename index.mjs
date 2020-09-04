@@ -1,6 +1,5 @@
 import express from 'express';
-import request from 'request';
-import getEnv from './src/utils/getEnv';
+import fetchAPIs from './src/api/fetchAPIs';
 
 const app = express();
 
@@ -9,17 +8,24 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/words/:word', (req, res) => {
-  request(
-    { url: `${getEnv('JISHO_URL', '')}?keyword=${req.params.word}` },
-    (error, response, body) => {
-      if (error || response.statusCode !== 200) {
-        return res.status(500).json({ type: 'error', message: error.message });
-      }
+app.post('/words', async (req, res) => {
+  const { kanji_live_api_key: kanjiLiveApiKey } = req.headers;
+  const { word, allowRefetch, handleAsWord } = req.query;
 
-      return res.json(JSON.parse(body));
-    },
-  );
+  const options = {
+    kanjiLiveApiKey,
+    allowRefetch,
+    handleAsWord,
+  };
+
+  const args = { word };
+
+  try {
+    const body = await fetchAPIs(options, args);
+    res.json(body);
+  } catch (err) {
+    res.status(500).json({ type: 'error', message: err.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;

@@ -2,7 +2,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "request": "^2.88.2"
+    "lodash": "^4.17.20",
+    "node-fetch": "^2.6.0"
   },
   "name": "proxy",
   "version": "1.0.0",
