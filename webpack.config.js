@@ -4,7 +4,7 @@ const path = require('path');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 
 const config = {
-  entry: './index.mjs',
+  entry: './server.js',
   resolve: {
     extensions: ['.mjs', '.js'],
     alias: {
