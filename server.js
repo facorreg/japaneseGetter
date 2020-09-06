@@ -1,7 +1,9 @@
 import express from 'express';
+import http from 'http';
 import isArray from 'lodash/isArray';
 import { getSingleKanji, getKanjiList } from './src/getKanji';
 import { getSingleWord } from './src/getWord';
+import { getEnv } from './src/utils';
 
 const app = express();
 
@@ -68,5 +70,14 @@ app.get('/word', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = getEnv('PORT', 3000);
+// eslint-disable-next-line no-console
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
+
+const ENV = getEnv('ENV');
+
+if (ENV === 'prod') {
+  setInterval(() => {
+    http.get(`http://${getEnv('PROJECT_DOMAIN', '')}.glitch.me/`);
+  }, 280000);
+}
