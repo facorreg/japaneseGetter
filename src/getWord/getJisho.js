@@ -1,20 +1,11 @@
 import isArray from 'lodash/isArray';
 import uniq from 'lodash/uniq';
-import {
-  fetch,
-  getEnv,
-  getKanji,
-  objectListKeysToCamelCase,
-} from '../utils';
+import { getKanji } from '../utils';
+import fetchJisho from './fetchJisho';
 
 const getJisho = async (word) => {
   try {
-    const { data: rawResponse } = await fetch({
-      url: getEnv('JISHO_URL', ''),
-      args: { keyword: word },
-    });
-
-    const response = objectListKeysToCamelCase(rawResponse);
+    const response = await fetchJisho(word);
 
     const words = response.map(({ senses, ...rest }) => ({
       senses: senses

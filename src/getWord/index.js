@@ -1,6 +1,7 @@
 import getSingleWord from './getSingleWord';
+import getWordReadings from './getWordReadings';
 
 export {
-  // eslint-disable-next-line import/prefer-default-export
   getSingleWord,
+  getWordReadings,
 };
