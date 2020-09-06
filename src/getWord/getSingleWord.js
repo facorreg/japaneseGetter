@@ -5,7 +5,7 @@ import getJisho from './getJisho';
 const parseWordData = (data, options) => {
   const { isSecondChoice } = options;
 
-  if (isEmpty(data)) return new Error('failed to fetch data');
+  if (isEmpty(data) || isEmpty(data.words)) return { error: 'No word found' };
 
   return {
     ...data,

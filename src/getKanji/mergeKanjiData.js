@@ -8,16 +8,19 @@ const getMeanings = (kanjiAliveData, kanjiApiData) => {
 
   const allMeanings = uniq([...meanings[0], ...meanings[1]]);
 
-  const [meaning, shortMeaning] = [
+  const [meaning, shortMeaning, kanjiAliveMeanings, kanjiApiDataMeanings] = [
     allMeanings,
     [...allMeanings].splice(0, 3),
+    ...meanings,
   ].map((arr) => arr.join(', '));
 
+  const useShortMeanings = meaning.split(',').length > 3;
+
   return {
-    kanjiAliveMeanings: meanings[0],
-    kanjiApiDataMeanings: meanings[1],
+    kanjiAliveMeanings,
+    kanjiApiDataMeanings,
     meaning,
-    shortMeaning: `${shortMeaning}...`,
+    shortMeaning: useShortMeanings ? `${shortMeaning}...` : '',
   };
 };
 
@@ -30,18 +33,21 @@ const buildFinalKanjiData = (kanjiData) => ({
 const mergeKanjiData = async (kanjiAliveData, kanjiApiData) => {
   const {
     kanjiAliveMeanings,
-    kanjiApiDataMeanings,
+    // kanjiApiDataMeanings,
     meaning,
     shortMeaning,
   } = getMeanings(kanjiAliveData, kanjiApiData);
 
   const finalDataArgs = isEmpty(kanjiAliveMeanings)
-    ? { ...kanjiApiData.kanji, meaning: kanjiApiDataMeanings }
+    ? { kanji: { ...kanjiApiData.kanji, meaning, shortMeaning } }
     : {
       ...kanjiAliveData,
-      meaning,
-      shortMeaning,
-      jlpt: get(kanjiApiData, 'kanji.jlpt'),
+      kanji: {
+        ...kanjiAliveData.kanji,
+        meaning,
+        shortMeaning,
+        jlpt: get(kanjiApiData, 'kanji.jlpt'),
+      },
     };
 
   return buildFinalKanjiData(finalDataArgs);

@@ -5,18 +5,18 @@ import getKanjiApi from './getKanjiApi';
 import mergeKanjiData from './mergeKanjiData';
 import { getSingleWord } from '../getWord';
 
-const getSingleKanji = async (options, word) => {
+const getSingleKanji = async (options, kanji) => {
   const { allowRefetch } = options;
 
   try {
-    const kanjiAliveData = await getKanjiAlive(word);
-    const kanjiApiData = await getKanjiApi(word);
+    const kanjiAliveData = await getKanjiAlive(kanji);
+    const kanjiApiData = await getKanjiApi(kanji);
     const isInvalid = (data) => data.error || get(data, 'kanji.meanings');
     const error = kanjiAliveData.error || kanjiApiData.error || '';
 
     if (isInvalid(kanjiAliveData) && isInvalid(kanjiApiData)) {
       return allowRefetch
-        ? getSingleWord({ ...options, isSecondChoice: true }, word)
+        ? getSingleWord({ ...options, isSecondChoice: true }, kanji)
         : rejectError('Failed to fetch data from the kanji APIs');
     }
 

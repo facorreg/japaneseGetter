@@ -6,6 +6,7 @@ import {
   objectKeysToCamelCase,
   objectListKeysToCamelCase,
 } from './keysToCamelCase';
+import objectPropsEnforceArray from './objectPropsEnforceArray';
 import rejectError from './rejectError';
 
 export {
@@ -16,5 +17,6 @@ export {
   filterEmpty,
   objectListKeysToCamelCase,
   objectKeysToCamelCase,
+  objectPropsEnforceArray,
   rejectError,
 };

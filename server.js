@@ -1,18 +1,25 @@
 import express from 'express';
-import { getSingleKanji } from './src/getKanji';
+import isArray from 'lodash/isArray';
+import { getSingleKanji, getKanjiList } from './src/getKanji';
 import { getSingleWord } from './src/getWord';
 
 const app = express();
 
-app.use((_, res, next) => {
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
+  req.query = Object.keys(req.query)
+    .reduce((acc, key) => ({
+      ...acc,
+      [key]: !isArray(req.query[key])
+        ? decodeURIComponent(req.query[key])
+        : req.query[key].map((q) => decodeURIComponent(q)),
+    }), {});
   next();
 });
 
-// app.get('/test', (_, res) => res.send('<div><p>Hello</p><h1>world</h1></div>'));
 app.get('/kanji', async (req, res) => {
   const { kanji_alive_api_key: kanjiAliveApiKey } = req.headers;
-  const { word, allowRefetch, handleAsWord } = req.query;
+  const { kanji, allowRefetch, handleAsWord } = req.query;
 
   const options = {
     kanjiAliveApiKey,
@@ -21,7 +28,25 @@ app.get('/kanji', async (req, res) => {
   };
 
   try {
-    const body = await getSingleKanji(options, word);
+    const body = await getSingleKanji(options, kanji);
+    res.json(body);
+  } catch (err) {
+    res.status(500).json({ type: 'error', message: err.message });
+  }
+});
+
+app.get('/kanjiList', async (req, res) => {
+  const { kanji_alive_api_key: kanjiAliveApiKey } = req.headers;
+  const { kanjiArray, allowRefetch, handleAsWord } = req.query;
+
+  const options = {
+    kanjiAliveApiKey,
+    allowRefetch,
+    handleAsWord,
+  };
+
+  try {
+    const body = await getKanjiList(options, kanjiArray);
     res.json(body);
   } catch (err) {
     res.status(500).json({ type: 'error', message: err.message });
@@ -30,7 +55,6 @@ app.get('/kanji', async (req, res) => {
 
 app.get('/word', async (req, res) => {
   const { word, allowRefetch, handleAsWord } = req.query;
-
   const options = {
     allowRefetch,
     handleAsWord,

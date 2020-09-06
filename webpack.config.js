@@ -8,7 +8,7 @@ const config = {
   resolve: {
     extensions: ['.mjs', '.js'],
     alias: {
-      utils: path.resolve(__dirname, 'src/utils/'),
+      // utils: path.resolve(__dirname, 'src/utils/'),
     },
   },
   output: {
