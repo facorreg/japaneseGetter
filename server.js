@@ -88,5 +88,5 @@ const ENV = getEnv('ENV');
 if (ENV === 'prod') {
   setInterval(() => {
     http.get(`http://${getEnv('PROJECT_DOMAIN', '')}.glitch.me/`);
-  }, 280000);
+  }, 60000);
 }
