@@ -46,7 +46,7 @@ app.get('/kanjiList', async (req, res) => {
   };
 
   try {
-    const body = await getKanjiList(options, kanjiArray);
+    const body = await getKanjiList(options, (isArray(kanjiArray) ? kanjiArray : [kanjiArray]));
     res.json(body);
   } catch (err) {
     res.status(500).json({ type: 'error', message: err.message });
