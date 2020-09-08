@@ -1,3 +1,4 @@
+/* eslint import/no-cycle: [2, { maxDepth: 1 }] */
 import get from 'lodash/get';
 import { rejectError } from '../utils';
 import getKanjiAlive from './getKanjiAlive';
