@@ -1,6 +1,6 @@
 import fetch from './fetch';
 import getEnv from './getEnv';
-import { getKanji, hasKanji } from './kanjiHandlers';
+import { getKanji, hasKanji, isKanji } from './kanjiHandlers';
 import filterEmpty from './filterEmpty';
 import {
   objectKeysToCamelCase,
@@ -14,6 +14,7 @@ export {
   getEnv,
   getKanji,
   hasKanji,
+  isKanji,
   filterEmpty,
   objectListKeysToCamelCase,
   objectKeysToCamelCase,
