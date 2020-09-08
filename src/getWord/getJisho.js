@@ -7,11 +7,7 @@ const getJisho = async (word) => {
   try {
     const response = await fetchJisho(word);
 
-    const words = response.map(({ senses, ...rest }) => ({
-      senses: senses
-        .filter(({ partsOfSpeech }) => isArray(partsOfSpeech) && !partsOfSpeech.includes('Wikipedia definition')),
-      ...rest,
-    }))
+    const words = response
       .filter(({ senses }) => isArray(senses) && senses.length);
 
     const kanjiWithin = uniq(words.reduce((accumulator, { japanese }) => {
