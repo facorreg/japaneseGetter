@@ -1,5 +1,4 @@
 import express from 'express';
-import http from 'http';
 import isArray from 'lodash/isArray';
 import { getSingleKanji, getKanjiList } from './src/getKanji';
 import { getSingleWord, getWordReadings, getWordTraductions } from './src/getWord';
