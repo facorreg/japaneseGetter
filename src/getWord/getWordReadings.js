@@ -1,5 +1,3 @@
-/* eslint import/no-cycle: [2, { maxDepth: 1 }] */
-
 import uniq from 'lodash/uniq';
 import get from 'lodash/get';
 import { isEmpty } from 'lodash';

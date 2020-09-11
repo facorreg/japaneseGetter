@@ -1,4 +1,3 @@
-/* eslint import/no-cycle: [2, { maxDepth: 1 }] */
 import get from 'lodash/get';
 import { rejectError, isKanji } from '../utils';
 import getJisho from './getJisho';

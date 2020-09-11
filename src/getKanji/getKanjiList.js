@@ -1,4 +1,3 @@
-/* eslint import/no-cycle: [2, { maxDepth: 1 }] */
 import getSingleKanji from './getSingleKanji';
 import { rejectError } from '../utils';
 

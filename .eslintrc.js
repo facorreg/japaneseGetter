@@ -11,5 +11,6 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'import/no-cycle': [2, { maxDepth: 1 }],
   },
 };

@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import isArray from 'lodash/isArray';
 import { getSingleKanji, getKanjiList } from './src/getKanji';
-import { getSingleWord, getWordReadings } from './src/getWord';
+import { getSingleWord, getWordReadings, getWordTraductions } from './src/getWord';
 import { getEnv } from './src/utils';
 
 const app = express();
@@ -58,6 +58,17 @@ app.get('/word/readings', async (req, res) => {
 
   try {
     const body = await getWordReadings({}, word);
+    res.json(body);
+  } catch (err) {
+    res.status(500).json({ type: 'error', message: err.message });
+  }
+});
+
+app.get('/word/traductions', async (req, res) => {
+  const { word } = req.query;
+
+  try {
+    const body = await getWordTraductions({}, word);
     res.json(body);
   } catch (err) {
     res.status(500).json({ type: 'error', message: err.message });
