@@ -93,11 +93,3 @@ app.get('/word', async (req, res) => {
 const PORT = getEnv('PORT', 3000);
 // eslint-disable-next-line no-console
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
-
-const ENV = getEnv('ENV');
-
-if (ENV === 'prod') {
-  setInterval(() => {
-    http.get(`http://${getEnv('PROJECT_DOMAIN', '')}.glitch.me/`);
-  }, 60000);
-}
