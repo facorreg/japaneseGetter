@@ -19,6 +19,8 @@ const getUsefulCharLists = (string) => ({
 */
 
 const isCoherentMatch = (word, jword, syllables = 1) => {
+  if (!jword) return false;
+
   const wordCharLists = getUsefulCharLists(word);
   const jwordCharLists = getUsefulCharLists(jword);
 
