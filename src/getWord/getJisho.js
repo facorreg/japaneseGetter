@@ -1,15 +1,7 @@
 import isArray from 'lodash/isArray';
 import uniq from 'lodash/uniq';
-import { getKanji } from '../utils';
+import { getKanji, replaceFullWidthLatin } from '../utils';
 import fetchJisho from './fetchJisho';
-
-const replaceFullWidthLatin = (str) => (
-  str.toLowerCase()
-    .replace(/\uff21-\uff3a/, (val) => (
-      // first character's value - (hex) a latin fullWidth + a ascii
-      String.fromCharCode(val.charCodeAt(0) - 0xFF21 + 97)
-    ))
-);
 
 const removeWikiIfExistsEslewhere = (responses, currSense) => {
   if (!currSense.partsOfSpeech.includes('Wikipedia definition')) return true;

@@ -17,6 +17,7 @@ import {
 } from './keysToCamelCase';
 import objectPropsEnforceArray from './objectPropsEnforceArray';
 import rejectError from './rejectError';
+import replaceFullWidthLatin from './replaceFullWidthLatin';
 import sliceFirst from './sliceFirst';
 
 export {
@@ -35,5 +36,6 @@ export {
   objectKeysToCamelCase,
   objectPropsEnforceArray,
   rejectError,
+  replaceFullWidthLatin,
   sliceFirst,
 };
