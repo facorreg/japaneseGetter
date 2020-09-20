@@ -7,7 +7,7 @@ const getQuery = (lists) => {
   const specificProps = {
     en: {
       auto_generate_synonyms_phrase_query: true,
-      // default_operator: 'AND',
+      default_operator: 'AND',
       analyzer: 'english',
     },
     jp: {
@@ -41,8 +41,10 @@ const getSingleCorpus = async (args) => {
     size = 1,
     pos,
     maxRetry = 1,
+    enTokens,
   } = args;
   try {
+    const matcher = (str, array) => str.match(new RegExp(array.join('|')));
     const query = {
       index: 'tatoeba',
       from,
@@ -53,16 +55,18 @@ const getSingleCorpus = async (args) => {
     const res = await search(esClient, query);
     const hits = get(res, 'body.hits.hits', [])
       .map(({ _source: source }) => ({ ...source, pos }));
+    const filtered = hits
+      .filter(({ jp, en }) => matcher(jp, jpList) && matcher(en, enTokens));
 
     const found = hits.length; // && filtered.length;
-    const remainingToFind = size - hits.length;
+    const remainingToFind = size - filtered.length;
     const shouldRecurs = (!found || remainingToFind) && maxRetry > 1;
 
     const complementaryResults = shouldRecurs
-      ? (await getSingleCorpus({ ...args, maxRetry: maxRetry - 1 }))
+      ? (await getSingleCorpus({ ...args, from: hits.length, maxRetry: maxRetry - 1 }))
       : [];
 
-    return Promise.resolve([...hits, ...complementaryResults]);
+    return Promise.resolve([...filtered, ...complementaryResults]);
   } catch (err) {
     return rejectError('Failed to get examples because ', err);
   }
@@ -70,10 +74,9 @@ const getSingleCorpus = async (args) => {
 
 const getCorpus = async (args) => {
   const { esClient, enList } = args;
-
   const corpuses = await Promise.all(
     enList.map(async (enQuery) => {
-      const isTokenable = await esClient.indices.analyze({
+      const tokensResponse = await esClient.indices.analyze({
         index: 'tatoeba',
         body: {
           analyzer: 'english',
@@ -81,8 +84,10 @@ const getCorpus = async (args) => {
         },
       });
 
-      return isTokenable
-        ? getSingleCorpus({ ...args, enList: [enQuery] })
+      const tokens = get(tokensResponse, 'body.tokens', []).map(({ token }) => token);
+
+      return tokens.length
+        ? getSingleCorpus({ ...args, enList: [enQuery], enTokens: tokens })
         : [];
     }),
   );
