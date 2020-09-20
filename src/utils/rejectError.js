@@ -1,3 +1,9 @@
-const reject = (msg) => Promise.reject(new Error(msg));
+const reject = (msg, err) => (
+  Promise.reject(
+    new Error(`${msg} ${err
+      ? `because ${err.message || err}`
+      : ''}`),
+  )
+);
 
 export default reject;

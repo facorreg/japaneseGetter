@@ -1,8 +1,7 @@
-import flattenDeep from 'lodash/flattenDeep';
-import uniq from 'lodash/uniq';
+// import flattenDeep from 'lodash/flattenDeep';
 import getSingleWord from './getSingleWord';
 import {
-  escapeRegExp, hasCharacters, getKanji, getCharacters,
+  escapeRegExp, hasCharacters, getKanji, getCharacters, objectPropsEnforceArray,
 } from '../utils';
 
 const getUsefulCharLists = (string) => ({
@@ -44,20 +43,32 @@ const isCoherentMatch = (word, jword, syllables = 1) => {
 const getWordTraductions = async (options, word) => {
   try {
     const { words = [] } = await getSingleWord({ ...options, allowRefetch: false }, word);
-    const translations = uniq(
-      flattenDeep(
-        words
-          .filter(({ japanese = [] }) => (
-            japanese.findIndex(({ word: jword, reading }) => (
-              jword === word
-              || reading === word
-              || (hasCharacters(word) && isCoherentMatch(word, jword))
-            )) >= 0))
-          .map(({ senses = [] }) => (
-            senses.map(({ englishDefinitions = [] }) => englishDefinitions))),
-      )
-        .map((e) => e.toLowerCase()),
-    );
+    const translations = words
+      .filter(({ japanese = [] }) => (
+        japanese.findIndex(({ word: jword, reading }) => (
+          jword === word
+          || reading === word
+          || (hasCharacters(word) && isCoherentMatch(word, jword))
+        )) >= 0))
+      .map(({ senses = [] }) => (
+        senses.map((sense) => {
+          const toEnforce = [
+            'englishDefinitions',
+            'tags',
+            'partsOfSpeech',
+          ];
+
+          const {
+            englishDefinitions,
+            tags,
+            partsOfSpeech,
+          } = objectPropsEnforceArray(sense, toEnforce);
+          return {
+            tags,
+            partsOfSpeech,
+            englishDefinitions,
+          };
+        })));
     return Promise.resolve(translations);
   } catch (err) {
     return Promise.reject(err);
