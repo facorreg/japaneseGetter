@@ -1,10 +1,11 @@
 import bulk from './bulk';
-import data from '../../test.json';
+import data from '../../tatoeba.json';
+import { getEnv } from '../utils';
 
 const bulkParser = ((dbulk, { jp, en }) => [
   ...dbulk, {
     index: {
-      _index: 'tatoeba',
+      _index: getEnv('CORPUS_ES_INDEX', 'tatoeba'),
       _type: '_doc',
     },
   },
