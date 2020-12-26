@@ -1,6 +1,8 @@
 /* eslint-disable consistent-return */
 import express from 'express';
 import isArray from 'lodash/isArray';
+import kuromoji from 'kuromoji';
+import bodyParser from 'body-parser';
 import { getSingleKanji, getKanjiList } from './src/getKanji';
 import { getSingleWord, getWordReadings, getWordTraductions } from './src/getWord';
 import getCorpus from './src/getCorpus';
@@ -13,10 +15,16 @@ import log from './src/logs';
 const esClient = createESClient();
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+const tokenizerPromise = new Promise((resolve, reject) => {
+  kuromoji.builder({ dicPath: 'node_modules/kuromoji/dict' }).build((err, tokenizer) => (err ? reject : resolve)(err || tokenizer));
+}).then((tokenizer) => tokenizer);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   req.query = Object.keys(req.query)
     .reduce((acc, key) => ({
       ...acc,
@@ -25,6 +33,17 @@ app.use((req, res, next) => {
         : req.query[key].map((q) => decodeURIComponent(q)),
     }), {});
   next();
+});
+
+app.post('/examples', async (req, res) => {
+  const { body: { list, ...rest } } = req;
+
+  const data = await Promise.all(
+    list.map(({ jpList, enList, pos }) => getCorpus({
+      ...rest, esClient, jpList, enList, pos, tokenizerPromise,
+    })),
+  );
+  res.status(200).json(data);
 });
 
 app.get('/es/build', async (_, res) => {
@@ -65,7 +84,7 @@ app.get('/examples', async (req, res) => {
     const data = await Promise.all(
       JSON.parse(list)
         .map(({ jpList, enList, pos }) => getCorpus({
-          ...req.query, esClient, jpList, enList, pos,
+          ...req.query, esClient, jpList, enList, pos, tokenizerPromise,
         })),
     );
     res.status(200).json(data);
@@ -116,6 +135,21 @@ app.get('/kanjiList', async (req, res) => {
 
   try {
     const body = await getKanjiList(options, (isArray(kanjiArray) ? kanjiArray : [kanjiArray]));
+    res.json(body);
+  } catch (err) {
+    res.status(500).json({ type: 'error', message: err.message });
+  }
+});
+
+app.get('/words', async (req, res) => {
+  const { words, allowRefetch, handleAsWord } = req.query;
+  const options = {
+    allowRefetch,
+    handleAsWord,
+  };
+
+  try {
+    const body = await Promise.all(words.map((word) => getSingleWord(options, word)));
     res.json(body);
   } catch (err) {
     res.status(500).json({ type: 'error', message: err.message });
